@@ -1,0 +1,17 @@
+# === Android ===
+AndroidStudioSeminar/.gradle/
+AndroidStudioSeminar/.idea/
+AndroidStudioSeminar/local.properties
+AndroidStudioSeminar/build/
+AndroidStudioSeminar/captures/
+
+# === Spring Boot ===
+api-server/target/
+api-server/.idea/
+api-server/.classpath
+api-server/.project
+
+# === OS ===
+*.log
+.DS_Store
+Thumbs.db
