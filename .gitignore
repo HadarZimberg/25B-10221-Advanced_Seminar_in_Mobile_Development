@@ -18,3 +18,4 @@ Thumbs.db
 
 # Firebase credentials
 *.json
+"api-server/src/main/resources/firebase/*.json" 
