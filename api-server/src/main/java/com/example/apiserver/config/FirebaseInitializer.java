@@ -6,30 +6,34 @@ import com.google.firebase.FirebaseOptions;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
-import java.io.FileInputStream;
-import java.io.IOException;
+
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 @Configuration
 public class FirebaseInitializer {
 
-    @PostConstruct
+	@PostConstruct
     public void init() {
         try {
-            FileInputStream serviceAccount =
-            		new FileInputStream("src/main/resources/firebase/b-10221-seminar-firebase-adminsdk-fbsvc-d68c2d2361.json");
-            /*InputStream serviceAccount = getClass().getClassLoader()
-            	    .getResourceAsStream("firebase/b-10221-seminar-firebase-adminsdk-fbsvc-d68c2d2361.json");*/
+            String firebaseConfig = System.getenv("FIREBASE_CONFIG_JSON");
+            if (firebaseConfig == null || firebaseConfig.isEmpty()) {
+                throw new IllegalStateException("FIREBASE_CONFIG_JSON environment variable is missing.");
+            }
+
+            InputStream serviceAccount = new ByteArrayInputStream(firebaseConfig.getBytes(StandardCharsets.UTF_8));
+
             FirebaseOptions options = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                     .build();
 
             if (FirebaseApp.getApps().isEmpty()) {
                 FirebaseApp.initializeApp(options);
-                System.out.println("Firebase has been initialized!");
+                System.out.println("Firebase has been initialized from environment variable!");
             }
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
