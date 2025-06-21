@@ -15,4 +15,12 @@ public class ApiController {
     public String echoMessage(@RequestBody String message) {
         return message;
     }
+    
+    @RestController
+    public class RootController {
+        @GetMapping("/")
+        public String index() {
+            return "🟢 API Server is running!";
+        }
+    }
 }

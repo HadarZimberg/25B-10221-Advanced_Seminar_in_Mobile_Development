@@ -19,3 +19,4 @@ Thumbs.db
 # Firebase credentials
 *.json
 
+/.metadata/
