@@ -32,17 +32,23 @@ public class PolygonService {
         return polygon; // So it can be returned in the controller
     }
 
-    public List<Polygon> getAllPolygons() throws ExecutionException, InterruptedException {
-        Firestore db = FirestoreClient.getFirestore();
-        ApiFuture<QuerySnapshot> query = db.collection(COLLECTION_NAME).get();
+    public List<Polygon> getAllPolygons() {
+        try {
+            Firestore db = FirestoreClient.getFirestore();
+            ApiFuture<QuerySnapshot> query = db.collection(COLLECTION_NAME).get();
+            List<QueryDocumentSnapshot> documents = query.get().getDocuments();
+            List<Polygon> polygons = new ArrayList<>();
 
-        List<QueryDocumentSnapshot> documents = query.get().getDocuments();
-        List<Polygon> polygons = new ArrayList<>();
+            for (QueryDocumentSnapshot doc : documents) {
+                System.out.println("Raw Firestore doc: " + doc.getData()); 
+                polygons.add(doc.toObject(Polygon.class));
+            }
 
-        for (QueryDocumentSnapshot doc : documents) {
-            polygons.add(doc.toObject(Polygon.class));
+            return polygons;
+        } catch (Exception e) {
+            System.err.println("ERROR in getAllPolygons:");
+            e.printStackTrace();
+            throw new RuntimeException("Failed to load polygons", e);
         }
-
-        return polygons;
     }
 }
