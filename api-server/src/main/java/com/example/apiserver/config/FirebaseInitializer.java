@@ -17,6 +17,7 @@ public class FirebaseInitializer {
 	@PostConstruct
     public void init() {
         try {
+        	System.setProperty("FIRESTORE_TRANSPORT", "rest");
             String firebaseConfig = System.getenv("FIREBASE_CONFIG_JSON");
             if (firebaseConfig == null || firebaseConfig.isEmpty()) {
                 throw new IllegalStateException("FIREBASE_CONFIG_JSON environment variable is missing.");
@@ -34,6 +35,7 @@ public class FirebaseInitializer {
             }
 
         } catch (Exception e) {
+        	System.err.println("Firebase initialization failed:");
             e.printStackTrace();
         }
     }

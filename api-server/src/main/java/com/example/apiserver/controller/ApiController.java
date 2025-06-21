@@ -20,7 +20,7 @@ public class ApiController {
     public class RootController {
         @GetMapping("/")
         public String index() {
-            return "🟢 API Server is running!";
+            return "API Server is running!";
         }
     }
 }
