@@ -26,7 +26,7 @@ dependencies {
 
     implementation 'com.google.firebase:firebase-admin:8.1.0'
 
-    implementation 'com.google.cloud:google-cloud-firestore:2.6.0'
+    implementation 'com.google.cloud:google-cloud-firestore:1.35.0'
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
