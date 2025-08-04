@@ -34,6 +34,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        MapDrawingSdk.init("https://faithful-dolphin-map-sdk-platform-2.koyeb.app");
+
         // Create a polygon
         Polygon polygon = new Polygon(
                 "Test Polygon from Android",
