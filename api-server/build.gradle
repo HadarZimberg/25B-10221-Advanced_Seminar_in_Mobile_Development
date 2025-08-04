@@ -33,7 +33,7 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	
-	implementation 'io.grpc:grpc-netty-shaded:1.55.1'
+	//implementation 'io.grpc:grpc-netty-shaded:1.55.1'
 }
 
 tasks.named('test') {
@@ -44,6 +44,7 @@ configurations {
     all {
         //Exclude native gRPC and Netty that causes SIGSEGV in cloud environments
         exclude group: 'io.grpc', module: 'grpc-netty'  
+        exclude group: 'io.grpc', module: 'grpc-netty-shaded'
         exclude group: 'io.netty', module: 'netty-tcnative'
     }
 }
