@@ -1,93 +1,77 @@
 package com.example.apiserver.service;
 
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
+import com.google.firebase.database.*;
 import com.example.apiserver.model.Polygon;
-import com.google.api.core.ApiFuture;
 import com.google.auth.oauth2.GoogleCredentials;
-import com.google.cloud.firestore.*;
-import com.google.api.gax.httpjson.InstantiatingHttpJsonChannelProvider;
+import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.CountDownLatch;
 
 @Service
 public class PolygonService {
 
     private static final String COLLECTION_NAME = "polygons";
-    private static final Logger logger = LoggerFactory.getLogger(PolygonService.class);
-    private static Firestore firestoreInstance;
+    private static DatabaseReference databaseReference;
 
-    private Firestore getDb() {
-        if (firestoreInstance == null) {
-            try {
-                logger.info("Initializing Firestore manually with REST transport...");
+    @PostConstruct
+    public void initFirebase() {
+        try {
+            if (FirebaseApp.getApps().isEmpty()) {
+                InputStream serviceAccount = getClass().getClassLoader()
+                        .getResourceAsStream("firebase/b-10221-seminar-firebase-adminsdk-fbsvc-cc52bf8b32.json");
 
-                String path = System.getenv("FIREBASE_CONFIG_JSON");
-                if (path == null) {
-                    throw new IllegalStateException("FIREBASE_CONFIG_JSON environment variable not set");
-                }
+                FirebaseOptions options = FirebaseOptions.builder()
+                        .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                        .setDatabaseUrl("https://b-10221-seminar-default-rtdb.europe-west1.firebasedatabase.app")
+                        .build();
 
-                firestoreInstance = FirestoreOptions.newBuilder()
-                        .setCredentials(GoogleCredentials.fromStream(new java.io.FileInputStream(path)))
-                        .setChannelProvider(InstantiatingHttpJsonChannelProvider.newBuilder().build())
-                        .build()
-                        .getService();
-
-                logger.info("✅ Firestore (REST) initialized successfully.");
-            } catch (Exception e) {
-                logger.error("🔥 Failed to initialize Firestore with REST transport", e);
-                throw new RuntimeException("Firestore initialization error", e);
+                FirebaseApp.initializeApp(options);
             }
+
+            databaseReference = FirebaseDatabase.getInstance().getReference(COLLECTION_NAME);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to initialize Firebase Realtime DB", e);
         }
-        return firestoreInstance;
     }
 
-
     public Polygon savePolygon(Polygon polygon) {
-        logger.info("Attempting to save polygon with label: {}", polygon.getLabel());
-
-        Firestore db = getDb();
-        DocumentReference docRef = db.collection(COLLECTION_NAME).document();
-        polygon.setId(docRef.getId());
-
-        logger.info("Generated ID: {}", polygon.getId());
-
-        ApiFuture<WriteResult> result = docRef.set(polygon);
-
-        try {
-            WriteResult writeResult = result.get(10, TimeUnit.SECONDS);
-            logger.info("Polygon saved at: {}", writeResult.getUpdateTime());
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            logger.error("❌ Failed to save polygon to Firestore!", e);
-            throw new RuntimeException("Failed to save polygon to Firestore", e);
-        }
+        DatabaseReference newRef = databaseReference.push(); // auto-generates ID
+        polygon.setId(newRef.getKey());
+        newRef.setValueAsync(polygon); // fire-and-forget
 
         return polygon;
     }
 
     public List<Polygon> getAllPolygons() {
-        logger.info("Fetching all polygons from Firestore...");
-        try {
-            Firestore db = getDb();
-            ApiFuture<QuerySnapshot> query = db.collection(COLLECTION_NAME).get();
-            List<QueryDocumentSnapshot> documents = query.get().getDocuments();
-            List<Polygon> polygons = new ArrayList<>();
+        List<Polygon> result = new ArrayList<>();
+        CountDownLatch latch = new CountDownLatch(1);
 
-            for (QueryDocumentSnapshot doc : documents) {
-                logger.debug("Raw Firestore document: {}", doc.getData());
-                polygons.add(doc.toObject(Polygon.class));
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Polygon polygon = snapshot.getValue(Polygon.class);
+                    result.add(polygon);
+                }
+                latch.countDown();
             }
 
-            logger.info("Successfully fetched {} polygons.", polygons.size());
-            return polygons;
-        } catch (Exception e) {
-            logger.error("❌ Failed to load polygons", e);
-            throw new RuntimeException("Failed to load polygons", e);
+            public void onCancelled(DatabaseError error) {
+                latch.countDown();
+            }
+        });
+
+        try {
+            latch.await(); // wait for async result
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
+
+        return result;
     }
 }
