@@ -5,6 +5,8 @@ import com.google.api.core.ApiFuture;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.firestore.*;
 import com.google.api.gax.httpjson.InstantiatingHttpJsonChannelProvider;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +23,9 @@ public class PolygonService {
     private static final String COLLECTION_NAME = "polygons";
     private static final Logger logger = LoggerFactory.getLogger(PolygonService.class);
     private static Firestore firestoreInstance;
+    
+    @Autowired
+    private FirestoreRestClient firestoreClient;
 
     private Firestore getDb() {
         if (firestoreInstance == null) {
@@ -49,25 +54,12 @@ public class PolygonService {
 
 
     public Polygon savePolygon(Polygon polygon) {
-        logger.info("Attempting to save polygon with label: {}", polygon.getLabel());
-
-        Firestore db = getDb();
-        DocumentReference docRef = db.collection(COLLECTION_NAME).document();
-        polygon.setId(docRef.getId());
-
-        logger.info("Generated ID: {}", polygon.getId());
-
-        ApiFuture<WriteResult> result = docRef.set(polygon);
-
         try {
-            WriteResult writeResult = result.get(10, TimeUnit.SECONDS);
-            logger.info("Polygon saved at: {}", writeResult.getUpdateTime());
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            logger.error("❌ Failed to save polygon to Firestore!", e);
+            firestoreClient.savePolygon(polygon);
+            return polygon;
+        } catch (Exception e) {
             throw new RuntimeException("Failed to save polygon to Firestore", e);
         }
-
-        return polygon;
     }
 
     public List<Polygon> getAllPolygons() {
