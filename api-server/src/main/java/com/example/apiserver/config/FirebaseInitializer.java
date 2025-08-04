@@ -53,7 +53,7 @@ public class FirebaseInitializer {
             }
 
         } catch (Exception e) {
-        	logger.info("Firebase initialization failed:");
+        	logger.error("Firebase initialization failed:", e);
             e.printStackTrace();
         }
     }

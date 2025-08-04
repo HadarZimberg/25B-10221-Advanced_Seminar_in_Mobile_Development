@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +25,7 @@ public class PolygonService {
         logger.info("Attempting to save polygon with label: {}", polygon.getLabel());
 
         Firestore db = FirestoreClient.getFirestore();
-        DocumentReference docRef = db.collection(COLLECTION_NAME).document(); // auto-generated ID
+        DocumentReference docRef = db.collection(COLLECTION_NAME).document();
         polygon.setId(docRef.getId());
 
         logger.info("Generated ID: {}", polygon.getId());
@@ -31,10 +33,10 @@ public class PolygonService {
         ApiFuture<WriteResult> result = docRef.set(polygon);
 
         try {
-            WriteResult writeResult = result.get();
+            WriteResult writeResult = result.get(10, TimeUnit.SECONDS); // ADD TIMEOUT
             logger.info("Polygon saved at: {}", writeResult.getUpdateTime());
-        } catch (InterruptedException | ExecutionException e) {
-            logger.error("Failed to save polygon to Firestore!", e); // FULL stacktrace
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            logger.error("Failed to save polygon to Firestore!", e);
             throw new RuntimeException("Failed to save polygon to Firestore", e);
         }
 
