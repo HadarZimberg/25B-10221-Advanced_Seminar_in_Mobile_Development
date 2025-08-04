@@ -1,5 +1,8 @@
 package com.example.mapdrawingsdk;
 
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -8,6 +11,12 @@ public class PolygonSender {
     private final ApiService api;
 
     private PolygonSender(String baseUrl) {
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .connectTimeout(20, TimeUnit.SECONDS)
+                .readTimeout(20, TimeUnit.SECONDS)
+                .writeTimeout(20, TimeUnit.SECONDS)
+                .build();
+
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://faithful-dolphin-map-sdk-platform-27b4e97b.koyeb.app/api/")
                 .addConverterFactory(GsonConverterFactory.create())
