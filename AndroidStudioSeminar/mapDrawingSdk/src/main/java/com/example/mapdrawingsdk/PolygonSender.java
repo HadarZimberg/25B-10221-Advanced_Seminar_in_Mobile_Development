@@ -18,8 +18,9 @@ public class PolygonSender {
                 .build();
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://faithful-dolphin-map-sdk-platform-27b4e97b.koyeb.app/api/")
+                .baseUrl("https://your-koyeb-app.koyeb.app/")
                 .addConverterFactory(GsonConverterFactory.create())
+                .client(okHttpClient)
                 .build();
 
         api = retrofit.create(ApiService.class);
