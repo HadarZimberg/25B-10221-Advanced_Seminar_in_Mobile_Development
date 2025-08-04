@@ -6,16 +6,13 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.firestore.*;
 import com.google.api.gax.httpjson.InstantiatingHttpJsonChannelProvider;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 @Service
 public class PolygonService {
@@ -23,9 +20,6 @@ public class PolygonService {
     private static final String COLLECTION_NAME = "polygons";
     private static final Logger logger = LoggerFactory.getLogger(PolygonService.class);
     private static Firestore firestoreInstance;
-    
-    @Autowired
-    private FirestoreRestClient firestoreClient;
 
     private Firestore getDb() {
         if (firestoreInstance == null) {
@@ -38,7 +32,7 @@ public class PolygonService {
                 }
 
                 firestoreInstance = FirestoreOptions.newBuilder()
-                        .setCredentials(GoogleCredentials.fromStream(new java.io.FileInputStream(path)))
+                        .setCredentials(GoogleCredentials.fromStream(new FileInputStream(path)))
                         .setChannelProvider(InstantiatingHttpJsonChannelProvider.newBuilder().build())
                         .build()
                         .getService();
@@ -52,12 +46,17 @@ public class PolygonService {
         return firestoreInstance;
     }
 
-
     public Polygon savePolygon(Polygon polygon) {
         try {
-            firestoreClient.savePolygon(polygon);
+            Firestore db = getDb();
+            DocumentReference docRef = db.collection(COLLECTION_NAME).document();
+            polygon.setId(docRef.getId()); // Store generated ID
+            ApiFuture<WriteResult> result = docRef.set(polygon);
+            result.get(); // wait for success
+            logger.info("✅ Polygon saved with ID: {}", polygon.getId());
             return polygon;
         } catch (Exception e) {
+            logger.error("❌ Failed to save polygon", e);
             throw new RuntimeException("Failed to save polygon to Firestore", e);
         }
     }
@@ -75,7 +74,7 @@ public class PolygonService {
                 polygons.add(doc.toObject(Polygon.class));
             }
 
-            logger.info("Successfully fetched {} polygons.", polygons.size());
+            logger.info("✅ Successfully fetched {} polygons.", polygons.size());
             return polygons;
         } catch (Exception e) {
             logger.error("❌ Failed to load polygons", e);
