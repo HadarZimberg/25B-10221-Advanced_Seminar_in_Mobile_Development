@@ -43,7 +43,7 @@ tasks.named('test') {
 configurations {
     all {
         //Exclude native gRPC and Netty that causes SIGSEGV in cloud environments
-        exclude group: 'io.grpc', module: 'grpc-netty-shaded'
+        //exclude group: 'io.grpc', module: 'grpc-netty-shaded'
         exclude group: 'io.netty', module: 'netty-tcnative'
     }
 }
