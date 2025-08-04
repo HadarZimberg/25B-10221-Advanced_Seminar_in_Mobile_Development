@@ -9,9 +9,9 @@ import java.util.List;
 
 public interface ApiService {
 
-    @POST("/api/polygons")
+    @POST("polygons")
     Call<Polygon> sendPolygon(@Body Polygon polygon);
 
-    @GET("/api/polygons")
+    @GET("polygons")
     Call<List<Polygon>> getPolygons();
 }

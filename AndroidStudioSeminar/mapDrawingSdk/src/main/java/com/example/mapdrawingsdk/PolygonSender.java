@@ -9,7 +9,7 @@ public class PolygonSender {
 
     private PolygonSender(String baseUrl) {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(baseUrl)
+                .baseUrl("https://faithful-dolphin-map-sdk-platform.koyeb.app/api/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
