@@ -10,12 +10,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Service
 public class PolygonService {
 
     private static final String COLLECTION_NAME = "polygons";
-
+    private static final Logger logger = LoggerFactory.getLogger(PolygonService.class);
+    
     public Polygon savePolygon(Polygon polygon) {
+    	logger.info("Saving polygon with label: {}", polygon.getLabel());
         Firestore db = FirestoreClient.getFirestore();
         DocumentReference docRef = db.collection("polygons").document(); // auto-generated ID
         polygon.setId(docRef.getId());
@@ -24,8 +29,10 @@ public class PolygonService {
         ApiFuture<WriteResult> result = docRef.set(polygon);
 
         try {
-            result.get(); // Wait for success or exception
+            WriteResult writeResult = result.get();
+            logger.info("Polygon saved at: {}", writeResult.getUpdateTime());
         } catch (InterruptedException | ExecutionException e) {
+            logger.error("Failed to save polygon to Firestore", e);
             throw new RuntimeException("Failed to save polygon to Firestore", e);
         }
 
@@ -33,6 +40,7 @@ public class PolygonService {
     }
 
     public List<Polygon> getAllPolygons() {
+    	logger.info("Fetching all polygons from Firestore...");
         try {
             Firestore db = FirestoreClient.getFirestore();
             ApiFuture<QuerySnapshot> query = db.collection(COLLECTION_NAME).get();
@@ -40,12 +48,15 @@ public class PolygonService {
             List<Polygon> polygons = new ArrayList<>();
 
             for (QueryDocumentSnapshot doc : documents) {
+            	logger.debug("Raw Firestore document: {}", doc.getData());
                 System.out.println("Raw Firestore doc: " + doc.getData()); 
                 polygons.add(doc.toObject(Polygon.class));
             }
 
+            logger.info("Successfully fetched {} polygons.", polygons.size());
             return polygons;
         } catch (Exception e) {
+        	logger.error("Failed to load polygons", e);
             System.err.println("ERROR in getAllPolygons:");
             e.printStackTrace();
             throw new RuntimeException("Failed to load polygons", e);
