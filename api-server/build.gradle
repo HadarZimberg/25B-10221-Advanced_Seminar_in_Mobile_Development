@@ -18,22 +18,19 @@ repositories {
 }
 
 dependencies {
-	implementation 'com.sun.mail:jakarta.mail:2.0.1'
-	
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	
-	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.3'
-	implementation 'com.google.firebase:firebase-admin:9.2.0'
-	
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	implementation 'org.hibernate.validator:hibernate-validator:8.0.1.Final'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.3'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.hibernate.validator:hibernate-validator:8.0.1.Final'
+    implementation 'com.sun.mail:jakarta.mail:2.0.1'
 
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-	
-	//implementation 'io.grpc:grpc-netty-shaded:1.55.1'
+    implementation 'com.google.firebase:firebase-admin:8.1.0'
+
+    implementation 'com.google.cloud:google-cloud-firestore:2.6.0'
+
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('test') {
