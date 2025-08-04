@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -28,12 +27,13 @@ public class PolygonService {
             try {
                 logger.info("Initializing Firestore manually with REST transport...");
 
-                InputStream serviceAccount = getClass()
-                    .getClassLoader()
-                    .getResourceAsStream("firebase/b-10221-seminar-firebase-adminsdk-fbsvc-cc52bf8b32.json");
+                String path = System.getenv("FIREBASE_CONFIG_JSON");
+                if (path == null) {
+                    throw new IllegalStateException("FIREBASE_CONFIG_JSON environment variable not set");
+                }
 
                 firestoreInstance = FirestoreOptions.newBuilder()
-                        .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                        .setCredentials(GoogleCredentials.fromStream(new java.io.FileInputStream(path)))
                         .setChannelProvider(InstantiatingHttpJsonChannelProvider.newBuilder().build())
                         .build()
                         .getService();
@@ -46,6 +46,7 @@ public class PolygonService {
         }
         return firestoreInstance;
     }
+
 
     public Polygon savePolygon(Polygon polygon) {
         logger.info("Attempting to save polygon with label: {}", polygon.getLabel());
