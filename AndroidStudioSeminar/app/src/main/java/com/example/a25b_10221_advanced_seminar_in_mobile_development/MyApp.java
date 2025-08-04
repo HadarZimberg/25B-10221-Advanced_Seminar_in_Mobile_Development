@@ -9,6 +9,6 @@ public class MyApp extends Application {
     public void onCreate() {
         super.onCreate();
         // Initialize SDK with the base URL
-        MapDrawingSdk.init("http://192.168.68.101:8080");
+        MapDrawingSdk.init("https://faithful-dolphin-map-sdk-platform.koyeb.app");
     }
 }
