@@ -20,23 +20,25 @@ public class PolygonService {
     private static final Logger logger = LoggerFactory.getLogger(PolygonService.class);
     
     public Polygon savePolygon(Polygon polygon) {
-    	logger.info("Saving polygon with label: {}", polygon.getLabel());
+        logger.info("Attempting to save polygon with label: {}", polygon.getLabel());
+
         Firestore db = FirestoreClient.getFirestore();
-        DocumentReference docRef = db.collection("polygons").document(); // auto-generated ID
+        DocumentReference docRef = db.collection(COLLECTION_NAME).document(); // auto-generated ID
         polygon.setId(docRef.getId());
 
-        // Save the polygon
+        logger.info("Generated ID: {}", polygon.getId());
+
         ApiFuture<WriteResult> result = docRef.set(polygon);
 
         try {
             WriteResult writeResult = result.get();
             logger.info("Polygon saved at: {}", writeResult.getUpdateTime());
         } catch (InterruptedException | ExecutionException e) {
-            logger.error("Failed to save polygon to Firestore", e);
+            logger.error("Failed to save polygon to Firestore!", e); // FULL stacktrace
             throw new RuntimeException("Failed to save polygon to Firestore", e);
         }
 
-        return polygon; // So it can be returned in the controller
+        return polygon;
     }
 
     public List<Polygon> getAllPolygons() {

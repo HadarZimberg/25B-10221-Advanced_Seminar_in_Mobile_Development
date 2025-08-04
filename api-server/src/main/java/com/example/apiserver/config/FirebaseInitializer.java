@@ -1,5 +1,6 @@
 package com.example.apiserver.config;
 
+import com.example.apiserver.service.PolygonService;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
@@ -11,11 +12,17 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.file.Paths;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Configuration
 public class FirebaseInitializer {
+	
+	private static final Logger logger = LoggerFactory.getLogger(PolygonService.class);
 
     @PostConstruct
     public void init() {
+    	logger.info("Initializing Firebase...");
         try {
             System.setProperty("FIRESTORE_TRANSPORT", "rest");
 
@@ -42,11 +49,11 @@ public class FirebaseInitializer {
 
             if (FirebaseApp.getApps().isEmpty()) {
                 FirebaseApp.initializeApp(options);
-                System.out.println("Firebase has been initialized.");
+                logger.info("Firebase has been initialized.");
             }
 
         } catch (Exception e) {
-            System.err.println("Firebase initialization failed:");
+        	logger.info("Firebase initialization failed:");
             e.printStackTrace();
         }
     }
