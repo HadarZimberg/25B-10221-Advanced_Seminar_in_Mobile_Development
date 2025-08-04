@@ -34,9 +34,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Initialize SDK
-        MapDrawingSdk.init("http://192.168.68.101:8080");
-
         // Create a polygon
         Polygon polygon = new Polygon(
                 "Test Polygon from Android",
