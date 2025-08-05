@@ -23,4 +23,9 @@ public class Polygon {
     public List<Point> getPoints() {
         return points;
     }
+
+    @Override
+    public String toString() {
+        return "Polygon{id=" + id + ", label=" + label + ", points=" + points + "}";
+    }
 }
