@@ -19,20 +19,24 @@ public class FirebaseInitializer {
 
     @PostConstruct
     public void init() {
-        logger.info("Initializing Firebase Admin SDK...");
+        logger.info("Initializing Firebase...");
+
         try {
-            String path = System.getenv("FIREBASE_CONFIG_JSON");
+            // Force REST transport to avoid gRPC issues on Koyeb
+            System.setProperty("FIRESTORE_TRANSPORT", "rest");
 
-            if (path == null) {
-                throw new IllegalStateException("❌ FIREBASE_CONFIG_JSON environment variable is not set.");
-            }
+            InputStream serviceAccount;
+            String source;
 
-            File keyFile = new File(path);
+            // ✅ Use uploaded file path in Koyeb or local file path during development
+            String filePath = "/app/b-10221-seminar-firebase-adminsdk-fbsvc-955d54a49d.json";
+            File keyFile = new File(filePath);
             if (!keyFile.exists()) {
-                throw new IllegalStateException("❌ Firebase key file not found at path: " + path);
+                throw new RuntimeException("❌ Firebase key file not found at: " + filePath);
             }
 
-            InputStream serviceAccount = new FileInputStream(keyFile);
+            serviceAccount = new FileInputStream(keyFile);
+            source = "file: " + filePath;
 
             FirebaseOptions options = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
@@ -40,14 +44,12 @@ public class FirebaseInitializer {
 
             if (FirebaseApp.getApps().isEmpty()) {
                 FirebaseApp.initializeApp(options);
-                logger.info("✅ Firebase Admin SDK initialized successfully from {}", path);
-            } else {
-                logger.info("ℹ️ Firebase Admin SDK already initialized.");
+                logger.info("✅ Firebase initialized using {}", source);
             }
 
         } catch (Exception e) {
             logger.error("🔥 Firebase initialization failed", e);
-            throw new RuntimeException("Failed to initialize Firebase Admin SDK", e);
+            throw new RuntimeException("Firebase initialization error", e);
         }
     }
 }
