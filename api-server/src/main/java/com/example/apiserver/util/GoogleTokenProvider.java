@@ -10,10 +10,10 @@ import java.util.Collections;
 @Component
 public class GoogleTokenProvider {
 
-    public String getAccessToken(String firebaseServiceJson) throws IOException {
-        GoogleCredentials credentials = GoogleCredentials
-                .fromStream(new ByteArrayInputStream(firebaseServiceJson.getBytes()))
-                .createScoped(Collections.singletonList("https://www.googleapis.com/auth/datastore"));
+	public String getAccessToken() throws IOException {
+        GoogleCredentials credentials = GoogleCredentials.getApplicationDefault()
+            .createScoped("https://www.googleapis.com/auth/cloud-platform");
+
         credentials.refreshIfExpired();
         return credentials.getAccessToken().getTokenValue();
     }

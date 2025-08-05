@@ -14,40 +14,41 @@ import java.util.*;
 @Service
 public class FirestoreRestClient {
 
-    @Value("${FIREBASE_CONFIG_JSON}")
-    private String firebaseConfigJson;
+	@Value("${FIREBASE_CONFIG_JSON}")
+	private String firebaseConfigJson;
 
-    private final GoogleTokenProvider tokenProvider;
-    private final RestTemplate restTemplate = new RestTemplate();
-    private final String projectId = "b-10221-seminar";
+	private final GoogleTokenProvider tokenProvider;
+	private final RestTemplate restTemplate = new RestTemplate();
+	private final String projectId = "b-10221-seminar";
 
-    public FirestoreRestClient(GoogleTokenProvider tokenProvider) {
-        this.tokenProvider = tokenProvider;
-    }
+	public FirestoreRestClient(GoogleTokenProvider tokenProvider) {
+		this.tokenProvider = tokenProvider;
+	}
 
-    public void savePolygon(Polygon polygon) throws IOException {
-        String token = tokenProvider.getAccessToken(firebaseConfigJson);
-        String url = "https://firestore.googleapis.com/v1/projects/" + projectId + "/databases/(default)/documents/polygons";
+	public void savePolygon(Polygon polygon) throws IOException {
+		String token = tokenProvider.getAccessToken();  
 
-        Map<String, Object> payload = Map.of(
-            "fields", Map.of(
-                "label", Map.of("stringValue", polygon.getLabel()),
-                "points", Map.of("arrayValue", Map.of(
-                    "values", polygon.getPoints().stream().map(p -> Map.of(
-                        "mapValue", Map.of("fields", Map.of(
-                            "lat", Map.of("doubleValue", p.getLat()),
-                            "lng", Map.of("doubleValue", p.getLng())
-                        ))
-                    )).toList()
-                ))
-            )
-        );
+		String url = "https://firestore.googleapis.com/v1/projects/" + projectId + "/databases/(default)/documents/polygons";
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(token);
+		Map<String, Object> payload = Map.of(
+				"fields", Map.of(
+						"label", Map.of("stringValue", polygon.getLabel()),
+						"points", Map.of("arrayValue", Map.of(
+								"values", polygon.getPoints().stream().map(p -> Map.of(
+										"mapValue", Map.of("fields", Map.of(
+												"lat", Map.of("doubleValue", p.getLat()),
+												"lng", Map.of("doubleValue", p.getLng())
+												))
+										)).toList()
+								))
+						)
+				);
 
-        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, headers);
-        restTemplate.postForEntity(url, entity, String.class);
-    }
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setBearerAuth(token);
+
+		HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, headers);
+		restTemplate.postForEntity(url, entity, String.class);
+	}
 }
