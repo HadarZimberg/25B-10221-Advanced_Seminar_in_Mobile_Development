@@ -20,18 +20,20 @@ public class PolygonController {
     @PostMapping
     public ResponseEntity<Polygon> savePolygon(@RequestBody Polygon polygon) {
         try {
-            System.out.println("Received polygon: " + polygon);
+            System.out.println("📥 Received polygon: " + polygon);
+            if (polygon == null || polygon.getPoints() == null || polygon.getPoints().isEmpty()) {
+                System.out.println("❌ Invalid polygon data");
+                return ResponseEntity.badRequest().build();
+            }
+
             Polygon savedPolygon = polygonService.savePolygon(polygon);
+            System.out.println("✅ Polygon saved: " + savedPolygon);
             return ResponseEntity.ok(savedPolygon);
         } catch (Exception e) {
-            System.out.println("Error saving polygon:");
-            e.printStackTrace(); // This will appear in Koyeb logs
+            System.out.println("❌ Error saving polygon:");
+            e.printStackTrace(); // This should go to Koyeb logs
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
-    @GetMapping
-    public List<Polygon> getAllPolygons() throws ExecutionException, InterruptedException {
-        return polygonService.getAllPolygons();
-    }
 }
