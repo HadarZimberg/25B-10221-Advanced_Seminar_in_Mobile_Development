@@ -39,4 +39,9 @@ public class Polygon {
     public void setPoints(List<Point> points) {
         this.points = points;
     }
+    
+    @Override
+    public String toString() {
+        return "Polygon{id=" + id + ", label=" + label + ", points=" + points + "}";
+    }
 }
