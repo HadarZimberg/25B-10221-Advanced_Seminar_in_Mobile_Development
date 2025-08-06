@@ -15,6 +15,14 @@ This project allows Android applications to **draw**, **label**, and **save poly
 
 ---
 
+## 🎥 Demo Video
+
+<a href="https://share.synthesia.io/80fc6042-e53e-47ae-8f5b-359d7b27d840">
+  <img src="https://github.com/HadarZimberg/25B-10221-Advanced_Seminar_in_Mobile_Development/blob/main/screenshots/7.JPG?raw=true" alt="Watch the demo video" width="400"/>
+</a>
+
+---
+
 ## 🧱 Project Architecture
 
 ### 🔍 Overview
