@@ -30,7 +30,9 @@ dependencies {
     implementation 'org.hibernate.validator:hibernate-validator:8.0.1.Final'
     implementation 'com.sun.mail:jakarta.mail:2.0.1'
 
-    implementation 'com.google.firebase:firebase-admin:7.3.0'
+    implementation 'com.google.firebase:firebase-admin:8.1.0'
+    implementation 'com.google.cloud:google-cloud-firestore:3.9.0'
+    implementation 'com.google.api:gax-httpjson:0.91.1'
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
