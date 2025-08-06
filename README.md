@@ -4,16 +4,14 @@ This project allows Android applications to **draw**, **label**, and **save poly
 
 ---
 
-<p align="center">
-<img src="" alt="app_screenshot"
-style="height:400px;"/>
-</p>
-<img src="screenshots/1.jpg" alt="create_new_survey" style="width:80%;">
-<img src="screenshots/2.jpg" alt="create_new_survey" style="width:80%;">
-<img src="screenshots/3.jpg" alt="create_new_survey" style="width:80%;">
-<img src="screenshots/4.jpg" alt="create_new_survey" style="width:80%;">
-<img src="screenshots/5.jpg" alt="create_new_survey" style="width:80%;">
-<img src="screenshots/6.jpg" alt="create_new_survey" style="width:80%;">
+<div style="white-space: nowrap;">
+   <img src="screenshots/1.jpg" alt="map" style="width:20%; margin-right: 4px;">
+   <img src="screenshots/2.jpg" alt="markers" style="width:20%; margin-right: 4px;">
+   <img src="screenshots/3.jpg" alt="polygon" style="width:20%; margin-right: 4px;">
+   <img src="screenshots/4.jpg" alt="add label" style="width:20%; margin-right: 4px;">
+   <img src="screenshots/5.jpg" alt="see new polygon" style="width:20%; margin-right: 4px;">
+   <img src="screenshots/6.jpg" alt="see all polysons" style="width:20%;">
+</div>
 
 ---
 
