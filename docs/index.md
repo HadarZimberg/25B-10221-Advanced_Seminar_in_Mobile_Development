@@ -126,12 +126,109 @@ Check out:
 
 ## 2. Integration Examples
 
+Load polygons:
 ```java
-MapDrawingSdk.init(context, "https://your-api/api/polygons");
-sdk.startDrawing();
-sdk.savePolygon("Zone A");
+private void loadPolygonsFromServer() {
+        if (polygonsShown) {
+            for (com.google.android.gms.maps.model.Polygon p : loadedPolygons) {
+                p.remove();
+            }
+            for (com.google.android.gms.maps.model.Marker m : loadedMarkers) {
+                m.remove();
+            }
+            loadedPolygons.clear();
+            loadedMarkers.clear();
+            polygonsShown = false;
+            Toast.makeText(this, "Polygons hidden", Toast.LENGTH_SHORT).show();
+            Log.d("SDK", "Polygons hidden.");
+            return;
+        }
+
+        MapDrawingSdk.fetchPolygons(polygons -> {
+            runOnUiThread(() -> {
+                if (polygons.isEmpty()) {
+                    Toast.makeText(this, "No polygons found", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                LatLngBounds.Builder boundsBuilder = new LatLngBounds.Builder();
+                boolean hasPoints = false;
+
+                for (Polygon polygon : polygons) {
+                    List<LatLng> latLngList = new ArrayList<>();
+                    double sumLat = 0, sumLng = 0;
+
+                    for (Point point : polygon.getPoints()) {
+                        LatLng latLng = new LatLng(point.getLat(), point.getLng());
+                        latLngList.add(latLng);
+                        boundsBuilder.include(latLng);
+                        sumLat += point.getLat();
+                        sumLng += point.getLng();
+                        hasPoints = true;
+                    }
+
+                    com.google.android.gms.maps.model.Polygon drawnPolygon = mMap.addPolygon(new PolygonOptions()
+                            .addAll(latLngList)
+                            .strokeColor(0xFF00AA00)
+                            .fillColor(0x3300AA00)
+                            .clickable(true));
+                    loadedPolygons.add(drawnPolygon);
+
+                    // Calculate center and place a marker with label
+                    LatLng center = new LatLng(sumLat / latLngList.size(), sumLng / latLngList.size());
+                    com.google.android.gms.maps.model.Marker marker = mMap.addMarker(
+                            new com.google.android.gms.maps.model.MarkerOptions()
+                                    .position(center)
+                                    .title(polygon.getLabel()));
+                    loadedMarkers.add(marker);
+                }
+
+                polygonsShown = true;
+                Toast.makeText(this, loadedPolygons.size() + " polygons displayed", Toast.LENGTH_SHORT).show();
+                Log.d("SDK", "Polygons loaded and displayed.");
+
+                if (hasPoints) {
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(), 100));
+                }
+            });
+        }, throwable -> {
+            Log.e("SDK", "Failed to load polygons", throwable);
+            runOnUiThread(() -> Toast.makeText(this, "Error loading polygons", Toast.LENGTH_SHORT).show());
+        });
+    }
 ```
 
+Save poligons:
+
+```
+private void sendPolygonToServer() {
+        if (drawnPoints.size() < 3) {
+            Log.w("SDK", "Polygon must have at least 3 points");
+            Toast.makeText(this, "Please draw at least 3 points to create a polygon", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Show input dialog to enter label
+        EditText input = new EditText(this);
+        input.setHint("Enter polygon label");
+
+        new AlertDialog.Builder(this)
+                .setTitle("Polygon Label")
+                .setView(input)
+                .setPositiveButton("Save", (dialog, which) -> {
+                    String label = input.getText().toString().trim();
+                    if (label.isEmpty()) {
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        String timestamp = sdf.format(new Date());
+                        label = "Polygon at " + timestamp;
+                    }
+
+                    savePolygonWithLabel(label);
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+```
 ---
 
 ## 3. Customization
