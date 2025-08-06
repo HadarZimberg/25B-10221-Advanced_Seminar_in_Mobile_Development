@@ -2,9 +2,11 @@ package com.example.a25b_10221_advanced_seminar_in_mobile_development;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.mapdrawingsdk.MapDrawingSdk;
@@ -20,7 +22,9 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -166,19 +170,76 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             return;
         }
 
-        // Convert Google LatLng to SDK's Point
+        // Show input dialog to enter label
+        EditText input = new EditText(this);
+        input.setHint("Enter polygon label");
+
+        new AlertDialog.Builder(this)
+                .setTitle("Polygon Label")
+                .setView(input)
+                .setPositiveButton("Save", (dialog, which) -> {
+                    String label = input.getText().toString().trim();
+                    if (label.isEmpty()) {
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        String timestamp = sdf.format(new Date());
+                        label = "Polygon at " + timestamp;
+                    }
+
+                    savePolygonWithLabel(label);
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void savePolygonWithLabel(String label) {
         List<Point> sdkPoints = new ArrayList<>();
-        for (com.google.android.gms.maps.model.LatLng latLng : drawnPoints) {
+        for (LatLng latLng : drawnPoints) {
             sdkPoints.add(new Point(latLng.latitude, latLng.longitude));
         }
 
-        Polygon polygon = new Polygon("Polygon at " + System.currentTimeMillis(), sdkPoints);
+        Polygon polygon = new Polygon(label, sdkPoints);
 
         MapDrawingSdk.sendPolygon(polygon, new PolygonManager.PolygonCallback() {
             @Override
             public void onSuccess() {
                 Log.d("SDK", "Polygon sent successfully!");
-                runOnUiThread(() -> Toast.makeText(MainActivity.this, "Polygon saved successfully", Toast.LENGTH_SHORT).show());
+
+                runOnUiThread(() -> {
+                    Toast.makeText(MainActivity.this, "Polygon saved successfully", Toast.LENGTH_SHORT).show();
+
+                    // Convert to LatLng list for drawing and center calculation
+                    List<LatLng> latLngList = new ArrayList<>();
+                    double sumLat = 0, sumLng = 0;
+
+                    for (Point point : polygon.getPoints()) {
+                        LatLng latLng = new LatLng(point.getLat(), point.getLng());
+                        latLngList.add(latLng);
+                        sumLat += point.getLat();
+                        sumLng += point.getLng();
+                    }
+
+                    // Draw the polygon
+                    com.google.android.gms.maps.model.Polygon drawnPolygon = mMap.addPolygon(new PolygonOptions()
+                            .addAll(latLngList)
+                            .strokeColor(0xFF00AA00)
+                            .fillColor(0x3300AA00)
+                            .clickable(true));
+                    loadedPolygons.add(drawnPolygon);
+
+                    // Add marker at center
+                    LatLng center = new LatLng(sumLat / latLngList.size(), sumLng / latLngList.size());
+                    com.google.android.gms.maps.model.Marker marker = mMap.addMarker(
+                            new com.google.android.gms.maps.model.MarkerOptions()
+                                    .position(center)
+                                    .title(polygon.getLabel()));
+                    loadedMarkers.add(marker);
+
+                    // Zoom in and show marker info
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(center, 14));
+                    if (marker != null) {
+                        marker.showInfoWindow(); // Show label bubble
+                    }
+                });
             }
 
             @Override
@@ -191,5 +252,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         drawnPoints.clear();
         if (currentPolygon != null) currentPolygon.remove();
     }
+
 
 }
