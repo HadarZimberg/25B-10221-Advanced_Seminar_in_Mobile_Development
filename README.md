@@ -4,6 +4,13 @@ This project allows Android applications to **draw**, **label**, and **save poly
 
 ---
 
+<p align="center">
+<img src="" alt="app_screenshot"
+style="height:400px;"/>
+</p>
+
+---
+
 ## 🧱 Project Architecture
 
 ### 🔍 Overview
