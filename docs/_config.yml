@@ -1,10 +1,19 @@
 title: Map Drawing SDK Documentation
+description: Documentation for API, Android SDK, and example app
 theme: just-the-docs
-logo: null
-color_scheme: light
+remote_theme: just-the-docs/just-the-docs
 
-# Set base path (REPO-NAME)
-baseurl: "/25B-10221-Advanced_Seminar_in_Mobile_Development"
+# Enable clean URLs
+permalink: pretty
 
-# Enable search box (optional)
-search_enabled: true
+# Sidebar
+collections:
+  pages:
+    output: true
+    permalink: /:path/
+
+just_the_docs:
+  collections:
+    pages:
+      sidebar:
+        nav: "docs/_sidebar.yml"
