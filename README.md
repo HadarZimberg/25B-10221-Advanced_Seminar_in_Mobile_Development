@@ -8,6 +8,12 @@ This project allows Android applications to **draw**, **label**, and **save poly
 <img src="" alt="app_screenshot"
 style="height:400px;"/>
 </p>
+<img src="screenshots/1.jpg" alt="create_new_survey" style="width:80%;">
+<img src="screenshots/2.jpg" alt="create_new_survey" style="width:80%;">
+<img src="screenshots/3.jpg" alt="create_new_survey" style="width:80%;">
+<img src="screenshots/4.jpg" alt="create_new_survey" style="width:80%;">
+<img src="screenshots/5.jpg" alt="create_new_survey" style="width:80%;">
+<img src="screenshots/6.jpg" alt="create_new_survey" style="width:80%;">
 
 ---
 
