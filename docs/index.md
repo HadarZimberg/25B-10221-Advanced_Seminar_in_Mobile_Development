@@ -25,12 +25,8 @@ Draw, label, and save polygons from Android to a Firebase‑backed Spring Boot A
 
 ## 🎥 Demo Video
 
-> *(Replace this with your own video)*
-
-<video controls width="100%">
-  <source src="assets/demo.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
+[![Watch the demo video](<img width="1457" height="111" alt="image" src="https://github.com/user-attachments/assets/daa062c6-8dad-46a7-931b-e1acc7aa3e3f" />
+)]([https://share.synthesia.io/bd430205-9c26-4b87-98f3-45026d8bb35e](https://share.synthesia.io/80fc6042-e53e-47ae-8f5b-359d7b27d840))
 
 ---
 
