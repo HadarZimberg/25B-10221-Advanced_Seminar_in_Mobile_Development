@@ -1,6 +1,6 @@
 title: Map Drawing SDK Documentation
 description: Documentation for API, Android SDK, and example app
-remote_theme: just-the-docs/just-the-docs
+theme: just-the-docs
 
 # Enable clean URLs
 permalink: pretty
