@@ -5,7 +5,7 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
@@ -14,20 +14,13 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 
 @Configuration
+@ConditionalOnProperty(name = "firebase.enabled", havingValue = "true", matchIfMissing = false)
 public class FirebaseInitializer {
 
     private static final Logger logger = LoggerFactory.getLogger(FirebaseInitializer.class);
 
-    @Value("${firebase.enabled:true}")
-    private boolean firebaseEnabled;
-
     @PostConstruct
     public void init() {
-        if (!firebaseEnabled) {
-            logger.info("🚫 Firebase initialization is disabled via property.");
-            return;
-        }
-
         logger.info("Initializing Firebase...");
 
         try {

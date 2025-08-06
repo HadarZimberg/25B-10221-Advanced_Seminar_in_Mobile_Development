@@ -5,7 +5,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 
 @SpringBootTest
-@TestPropertySource(properties = "firebase.enabled=false")
+@TestPropertySource(locations = "classpath:application.properties")
 class ApiServerApplicationTests {
 
 	@Test
