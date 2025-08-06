@@ -1,6 +1,3 @@
-title: Map Drawing SDK Documentation
-description: Documentation for API, Android SDK, and example app
-theme: just-the-docs
-
-# Enable clean URLs
-permalink: pretty
+title: MapDrawingSDK Documentation
+description: Android SDK and REST API for polygon drawing
+theme: jekyll-theme-cayman
