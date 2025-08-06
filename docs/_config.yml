@@ -1,3 +1,10 @@
-theme: jekyll-theme-cayman
-title: Map Drawing SDK
-description: Android SDK and API for drawing and saving map polygons
+title: Map Drawing SDK Documentation
+theme: just-the-docs
+logo: null
+color_scheme: light
+
+# Set base path (REPO-NAME)
+baseurl: "/25B-10221-Advanced_Seminar_in_Mobile_Development"
+
+# Enable search box (optional)
+search_enabled: true
