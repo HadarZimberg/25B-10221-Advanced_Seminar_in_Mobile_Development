@@ -35,5 +35,10 @@ public class PolygonController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+    
+    @GetMapping
+    public List<Polygon> getAllPolygons() throws ExecutionException, InterruptedException {
+        return polygonService.getAllPolygons();
+    }
 
 }
