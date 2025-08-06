@@ -12,7 +12,6 @@ import javax.annotation.PostConstruct;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 
 @Configuration
@@ -31,7 +30,7 @@ public class FirebaseInitializer {
             String filePath = "/app/b-10221-seminar-firebase-adminsdk-fbsvc-955d54a49d.json";
             File keyFile = new File(filePath);
             if (!keyFile.exists()) {
-                throw new RuntimeException("❌ Firebase key file not found at: " + filePath);
+                throw new RuntimeException("Firebase key file not found at: " + filePath);
             }
 
             InputStream serviceAccount = new ByteArrayInputStream(System.getenv("FIREBASE_CONFIG_JSON").getBytes());
@@ -42,11 +41,11 @@ public class FirebaseInitializer {
 
             if (FirebaseApp.getApps().isEmpty()) {
                 FirebaseApp.initializeApp(options);
-                logger.info("✅ Firebase initialized");
+                logger.info("Firebase initialized");
             }
 
         } catch (Exception e) {
-            logger.error("🔥 Firebase initialization failed", e);
+            logger.error("Firebase initialization failed", e);
             throw new RuntimeException("Firebase initialization error", e);
         }
     }
