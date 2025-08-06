@@ -1,9 +1,0 @@
-entries:
-  - title: Getting Started
-    url: /setup
-  - title: SDK Integration
-    url: /sdk
-  - title: Example App
-    url: /example
-  - title: API Service
-    url: /api
