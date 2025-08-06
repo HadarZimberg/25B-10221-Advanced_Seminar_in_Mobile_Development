@@ -4,15 +4,3 @@ theme: just-the-docs
 
 # Enable clean URLs
 permalink: pretty
-
-# Sidebar
-collections:
-  pages:
-    output: true
-    permalink: /:path/
-
-just_the_docs:
-  collections:
-    pages:
-      sidebar:
-        nav: "docs/_sidebar.yml"
