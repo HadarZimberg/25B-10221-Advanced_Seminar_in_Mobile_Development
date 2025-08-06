@@ -198,9 +198,9 @@ private void loadPolygonsFromServer() {
     }
 ```
 
-Save poligons:
+Save polygons:
 
-```
+```java
 private void sendPolygonToServer() {
         if (drawnPoints.size() < 3) {
             Log.w("SDK", "Polygon must have at least 3 points");
