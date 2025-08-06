@@ -15,52 +15,34 @@ import java.util.List;
 @Service
 public class PolygonService {
 
-    private static final String COLLECTION_NAME = "polygons";
-    private static final Logger logger = LoggerFactory.getLogger(PolygonService.class);
+	private static final Logger logger = LoggerFactory.getLogger(PolygonService.class);
+	private final FirestoreRestClient firestoreRestClient;
 
-    // ✅ Uses Admin SDK which handles Firestore initialization
-    private Firestore getDb() {
-        try {
-            return FirestoreClient.getFirestore();
-        } catch (Exception e) {
-            logger.error("❌ Failed to get Firestore instance", e);
-            throw new RuntimeException("Firestore initialization error", e);
-        }
-    }
+    public PolygonService(FirestoreRestClient firestoreRestClient) {
+		this.firestoreRestClient = firestoreRestClient;
+	}
 
-    public Polygon savePolygon(Polygon polygon) {
-        try {
-            Firestore db = getDb();
-            DocumentReference docRef = db.collection(COLLECTION_NAME).document();
-            polygon.setId(docRef.getId()); // Store generated ID
-            ApiFuture<WriteResult> result = docRef.set(polygon);
-            result.get(); // Wait for write to complete
-            logger.info("✅ Polygon saved with ID: {}", polygon.getId());
-            return polygon;
-        } catch (Exception e) {
-            logger.error("❌ Failed to save polygon", e);
-            throw new RuntimeException("Failed to save polygon to Firestore", e);
-        }
-    }
+	public Polygon savePolygon(Polygon polygon) {
+		try {
+			firestoreRestClient.savePolygon(polygon);
+			logger.info("✅ Polygon saved via REST");
+			return polygon;
+		} catch (Exception e) {
+			logger.error("❌ Failed to save polygon via REST", e);
+			throw new RuntimeException("Failed to save polygon via REST", e);
+		}
+	}
 
-    public List<Polygon> getAllPolygons() {
-        logger.info("Fetching all polygons from Firestore...");
-        try {
-            Firestore db = getDb();
-            ApiFuture<QuerySnapshot> query = db.collection(COLLECTION_NAME).get();
-            List<QueryDocumentSnapshot> documents = query.get().getDocuments();
-            List<Polygon> polygons = new ArrayList<>();
+	public List<Polygon> getAllPolygons() {
+		logger.info("Fetching all polygons via REST...");
+		try {
+			List<Polygon> polygons = firestoreRestClient.getAllPolygons();
+			logger.info("✅ Successfully fetched {} polygons.", polygons.size());
+			return polygons;
+		} catch (Exception e) {
+			logger.error("❌ Failed to fetch polygons via REST", e);
+			throw new RuntimeException("Failed to fetch polygons via REST", e);
+		}
+	}
 
-            for (QueryDocumentSnapshot doc : documents) {
-                logger.debug("Raw Firestore document: {}", doc.getData());
-                polygons.add(doc.toObject(Polygon.class));
-            }
-
-            logger.info("✅ Successfully fetched {} polygons.", polygons.size());
-            return polygons;
-        } catch (Exception e) {
-            logger.error("❌ Failed to load polygons", e);
-            throw new RuntimeException("Failed to load polygons", e);
-        }
-    }
 }
