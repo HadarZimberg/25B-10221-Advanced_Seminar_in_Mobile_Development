@@ -9,6 +9,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
+
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -32,7 +34,7 @@ public class FirebaseInitializer {
                 throw new RuntimeException("❌ Firebase key file not found at: " + filePath);
             }
 
-            InputStream serviceAccount = new FileInputStream(keyFile);
+            InputStream serviceAccount = new ByteArrayInputStream(System.getenv("FIREBASE_CONFIG_JSON").getBytes());
 
             FirebaseOptions options = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
